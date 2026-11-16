@@ -1,10 +1,127 @@
-<!Doctype html>
-<html>
-  <head> <title> 게시판 연결 실습 </title> </head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 연결 실습</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 30px;
+        }
+
+        /* 상단 네비게이션 스타일 */
+        .nav-menu {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .nav-menu a {
+            color: purple;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-menu a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            margin: 0 10px;
+            color: #666;
+        }
+
+        /* 콘텐츠 영역 기본 숨김 처리 */
+        .content-section {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        /* 활성화되었을 때 보여주기 */
+        .content-section.active {
+            display: block;
+        }
+    </style>
+</head>
 <body>
-  <hr>
-  <a href="https://github.com/sundayi0/FinalWeb/issues/1#issue-6411850930"> 이슈 게시판 이동 </a> | 
-  <a href="#"> 방명록 이동 </a> 
-  <hr>
-</body>  
+
+    <!-- 상단 메뉴 영역 -->
+    <div class="nav-menu">
+        <a onclick="showContent('issue')">이슈 게시판 이동</a>
+        <span class="divider">|</span>
+        <a onclick="showContent('guestbook')">방명록 이동</a>
+    </div>
+
+    <!-- 이슈 게시판 콘텐츠 영역 -->
+    <div id="issue-section" class="content-section">
+        <h2>이슈 게시판</h2>
+        <p>현재 등록된 이슈가 없습니다.</p>
+    </div>
+
+    <!-- 방명록 콘텐츠 영역 (Giscus 연동) -->
+    <div id="guestbook-section" class="content-section">
+        <h2>방명록</h2>
+        <p>깃허브 계정으로 로그인하여 방명록을 남겨보세요!</p>
+        
+        <!-- Giscus가 삽입될 공간 -->
+        <div id="giscus-container"></div>
+    </div>
+
+    <script>
+        let giscusLoaded = false; // Giscus가 중복 로드되는 것을 방지하기 위한 변수
+
+        // 링크 클릭 시 해당 섹션을 화면에 표시하는 함수
+        function showContent(type) {
+            // 1. 모든 콘텐츠 영역 숨기기
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 2. 선택한 타입에 맞는 섹션 표시
+            if (type === 'issue') {
+                document.getElementById('issue-section').classList.add('active');
+            } else if (type === 'guestbook') {
+                document.getElementById('guestbook-section').classList.add('active');
+
+                // 방명록을 처음 누를 때만 Giscus 스크립트를 동적으로 로드
+                if (!giscusLoaded) {
+                    loadGiscus();
+                    giscusLoaded = true;
+                }
+            }
+        }
+
+        // Giscus 스크립트를 동적으로 생성하여 주입하는 함수
+        function loadGiscus() {
+            const container = document.getElementById('giscus-container');
+            const script = document.createElement('script');
+            
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', '사용자이름/저장소이름'); // 본인의 깃허브 레포지토리 (예: sunday0/FinalWeb)
+            script.setAttribute('data-repo-id', '여기에_REPO_ID입력'); // Giscus 설정 페이지에서 확인
+            script.setAttribute('data-category', 'Announcements'); // 디스커션 카테고리 이름
+            script.setAttribute('data-category-id', '여기에_CATEGORY_ID입력'); // Giscus 설정 페이지에서 확인
+            script.setAttribute('data-mapping', 'pathname');
+            script.setAttribute('data-strict', '0');
+            script.setAttribute('data-reactions-enabled', '1');
+            script.setAttribute('data-emit-metadata', '0');
+            script.setAttribute('data-input-position', 'bottom');
+            script.setAttribute('data-theme', 'light');
+            script.setAttribute('data-lang', 'ko');
+            script.crossOrigin = 'anonymous';
+            script.async = true;
+
+            container.appendChild(script);
+        }
+    </script>
+
+</body>
 </html>
